@@ -11,11 +11,10 @@ permissions:
 
 jobs:
   build:
-    name: Build AVPlayer Android APK
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Flutter
@@ -24,27 +23,15 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Create Android platform
-        run: | flutter create . --platforms=android --project-name avplayer --org com.vinzvereent 
-      - name: Prepare AVPlayer source
-        shell: bash
-        run: | mkdir -p lib 
-          if [ -f "main.dart" ]; then
-            cp "main.dart" "lib/main.dart"
-          elif [ ! -f "lib/main.dart" ]; then
-            echo "ERROR: main.dart atau lib/main.dart tidak ditemukan."
-            exit 1
-          fi
+      - name: Create Android project
+        run: flutter create . --platforms=android --project-name avplayer --org com.vinzvereent
 
-          if [ -f "avplayer_logo.png" ]; then
-            mkdir -p assets
-            cp "avplayer_logo.png" "assets/avplayer_logo.png"
-          fi
-
-      - name: Install dependencies
+      - name: Copy AVPlayer main.dart
+        run: | if [ -f "main.dart" ]; then cp main.dart lib/main.dart elif [ ! -f "lib/main.dart" ]; then echo "main.dart tidak ditemukan" exit 1 fi 
+      - name: Get dependencies
         run: flutter pub get
 
-      - name: Build release APK
+      - name: Build APK
         run: flutter build apk --release
 
       - name: Upload APK
