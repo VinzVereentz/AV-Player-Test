@@ -33,9 +33,15 @@ jobs:
 
       - name: Copy AVPlayer source
         run: |
+          mkdir -p /tmp/avplayer/lib
+          mkdir -p /tmp/avplayer/assets
+
           cp pubspec.yaml /tmp/avplayer/pubspec.yaml
-          cp -r lib /tmp/avplayer/lib
-          cp -r assets /tmp/avplayer/assets
+          cp main.dart /tmp/avplayer/lib/main.dart
+
+          if [ -f avplayer_logo.png ]; then
+            cp avplayer_logo.png /tmp/avplayer/assets/avplayer_logo.png
+          fi
 
       - name: Install dependencies
         working-directory: /tmp/avplayer
