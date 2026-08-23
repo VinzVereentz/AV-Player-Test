@@ -1,9 +1,7 @@
 name: Build AVPlayer APK
-
-on:
+"on":
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -12,7 +10,6 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,8 +23,9 @@ jobs:
       - name: Create Android project
         run: flutter create . --platforms=android --project-name avplayer --org com.vinzvereent
 
-      - name: Copy AVPlayer main.dart
-        run: | if [ -f "main.dart" ]; then cp main.dart lib/main.dart elif [ ! -f "lib/main.dart" ]; then echo "main.dart tidak ditemukan" exit 1 fi 
+      - name: Copy main.dart
+        run: cp main.dart lib/main.dart
+
       - name: Get dependencies
         run: flutter pub get
 
