@@ -1,16 +1,17 @@
 name: Build AVPlayer APK
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
   build:
+    name: Build AVPlayer Android APK
     runs-on: ubuntu-latest
 
     steps:
@@ -23,37 +24,33 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Create Flutter Android project
-        run: |
-          flutter create \
-            --platforms=android \
-            --org com.avplayer \
-            --project-name avplayer \
-            /tmp/avplayer
+      - name: Create Android platform
+        run: | flutter create . --platforms=android --project-name avplayer --org com.vinzvereent 
+      - name: Prepare AVPlayer source
+        shell: bash
+        run: | mkdir -p lib 
+          if [ -f "main.dart" ]; then
+            cp "main.dart" "lib/main.dart"
+          elif [ ! -f "lib/main.dart" ]; then
+            echo "ERROR: main.dart atau lib/main.dart tidak ditemukan."
+            exit 1
+          fi
 
-      - name: Copy AVPlayer source
-        run: |
-          mkdir -p /tmp/avplayer/lib
-          mkdir -p /tmp/avplayer/assets
-
-          cp pubspec.yaml /tmp/avplayer/pubspec.yaml
-          cp main.dart /tmp/avplayer/lib/main.dart
-
-          if [ -f avplayer_logo.png ]; then
-            cp avplayer_logo.png /tmp/avplayer/assets/avplayer_logo.png
+          if [ -f "avplayer_logo.png" ]; then
+            mkdir -p assets
+            cp "avplayer_logo.png" "assets/avplayer_logo.png"
           fi
 
       - name: Install dependencies
-  run: flutter pub get
+        run: flutter pub get
 
-- name: Analyze project
-  run: flutter analyze lib || true
+      - name: Build release APK
+        run: flutter build apk --release
 
-- name: Build APK
-  run: flutter build apk --release
-
-- name: Upload APK
-  uses: actions/upload-artifact@v4
-  with:
-    name: AVPlayer-APK
-    path: build/app/outputs/flutter-apk/app-release.apk
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: AVPlayer-APK
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+          retention-days: 14
