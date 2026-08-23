@@ -1,0 +1,56 @@
+name: Build AVPlayer APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Create Flutter Android project
+        run: |
+          flutter create \
+            --platforms=android \
+            --org com.avplayer \
+            --project-name avplayer \
+            /tmp/avplayer
+
+      - name: Copy AVPlayer source
+        run: |
+          cp pubspec.yaml /tmp/avplayer/pubspec.yaml
+          cp -r lib /tmp/avplayer/lib
+          cp -r assets /tmp/avplayer/assets
+
+      - name: Install dependencies
+        working-directory: /tmp/avplayer
+        run: flutter pub get
+
+      - name: Analyze project
+        working-directory: /tmp/avplayer
+        run: flutter analyze
+
+      - name: Build APK
+        working-directory: /tmp/avplayer
+        run: flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: AVPlayer-release-apk
+          path: /tmp/avplayer/build/app/outputs/flutter-apk/app-release.apk
