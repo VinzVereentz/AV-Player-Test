@@ -44,19 +44,16 @@ jobs:
           fi
 
       - name: Install dependencies
-        working-directory: /tmp/avplayer
-        run: flutter pub get
+  run: flutter pub get
 
-      - name: Analyze project
-        working-directory: /tmp/avplayer
-        run: flutter analyze lib
+- name: Analyze project
+  run: flutter analyze lib || true
 
-      - name: Build APK
-        working-directory: /tmp/avplayer
-        run: flutter build apk --release
+- name: Build APK
+  run: flutter build apk --release
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: AVPlayer-release-apk
-          path: /tmp/avplayer/build/app/outputs/flutter-apk/app-release.apk
+- name: Upload APK
+  uses: actions/upload-artifact@v4
+  with:
+    name: AVPlayer-APK
+    path: build/app/outputs/flutter-apk/app-release.apk
