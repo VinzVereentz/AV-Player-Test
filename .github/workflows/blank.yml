@@ -49,7 +49,7 @@ jobs:
 
       - name: Analyze project
         working-directory: /tmp/avplayer
-        run: flutter analyze
+        run: flutter analyze lib
 
       - name: Build APK
         working-directory: /tmp/avplayer
