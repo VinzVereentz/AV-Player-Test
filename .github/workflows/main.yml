@@ -1,0 +1,56 @@
+name: Build AVPlayer APK
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build AVPlayer Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Create Android platform
+        run: | flutter create . --platforms=android --project-name avplayer --org com.vinzvereent 
+      - name: Prepare AVPlayer source
+        shell: bash
+        run: | mkdir -p lib 
+          if [ -f "main.dart" ]; then
+            cp "main.dart" "lib/main.dart"
+          elif [ ! -f "lib/main.dart" ]; then
+            echo "ERROR: main.dart atau lib/main.dart tidak ditemukan."
+            exit 1
+          fi
+
+          if [ -f "avplayer_logo.png" ]; then
+            mkdir -p assets
+            cp "avplayer_logo.png" "assets/avplayer_logo.png"
+          fi
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: AVPlayer-APK
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+          retention-days: 14
