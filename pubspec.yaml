@@ -1,5 +1,5 @@
 name: avplayer
-description: AVPlayer - Android media player with AI subtitle foundation.
+description: AVPlayer - Android media player
 publish_to: "none"
 version: 1.0.0+1
 
@@ -9,6 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
   cupertino_icons: ^1.0.8
   file_picker: ^10.3.3
   video_player: ^2.10.0
@@ -22,5 +23,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  assets:
-    - assets/avplayer_logo.png
